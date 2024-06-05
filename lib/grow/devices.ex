@@ -101,4 +101,6 @@ defmodule Grow.Devices do
   def change_device(%Device{} = device, attrs \\ %{}) do
     Device.changeset(device, attrs)
   end
+
+  def get_by_mac(mac), do: Repo.get_by(Device, mac_address: mac) |> Repo.preload(:states)
 end

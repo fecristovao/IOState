@@ -1,4 +1,5 @@
 defmodule Grow.States.State do
+  @derive {Jason.Encoder, only: [:active, :name, :pin]}
   use Ecto.Schema
   import Ecto.Changeset
 
