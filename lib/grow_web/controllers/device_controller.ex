@@ -3,7 +3,8 @@ defmodule GrowWeb.DeviceController do
   use GrowWeb, :controller
 
   def index(conn, _opts) do
-    device = conn.assigns[:device]
+    device_id = conn.assigns[:device_id]
+    device = Devices.get_device!(device_id) |> Grow.Repo.preload(:states)
     conn |> json(device)
   end
 
@@ -14,7 +15,24 @@ defmodule GrowWeb.DeviceController do
     end
   end
 
-  def update_state(conn, params) do
+  def update_state(conn, %{"pin" => pin, "active" => active}) do
+    device_id = conn.assigns[:device_id]
 
+    with state when not is_nil(state) <- Grow.States.get_state_by_pin_id(device_id, pin) do
+      case Grow.States.update_state(state, %{active: active}) do
+        {:ok, _} -> conn |> send_resp(:ok, "")
+        {:error, _} -> conn |> send_resp(:bad_request, "")
+      end
+    else
+      nil -> conn |> put_status(:bad_request)
+    end
+  end
+
+  def create_state(conn, params) do
+    device_id = conn.assigns[:device_id]
+    case Grow.States.create_state_child(device_id, params) do
+      {:ok, _} -> conn |> send_resp(204, "")
+      {:error, _} -> conn |> send_resp(:bad_request, "")
+    end
   end
 end

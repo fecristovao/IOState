@@ -3,7 +3,7 @@ defmodule GrowWeb.PlugMac do
   alias Grow.Devices
 
   @input_mac_field "x-mac-address"
-  @output_mac_field :device
+  @output_mac_field :device_id
 
   def init(opts), do: opts
 
@@ -39,7 +39,7 @@ defmodule GrowWeb.PlugMac do
   defp authenticate(conn, mac) do
     case Devices.get_by_mac(mac) do
       nil -> halt_connection(conn)
-      device -> Plug.Conn.assign(conn, @output_mac_field, device)
+      device -> Plug.Conn.assign(conn, @output_mac_field, device.id)
     end
   end
 

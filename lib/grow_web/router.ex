@@ -15,6 +15,8 @@ defmodule GrowWeb.Router do
     scope "/v1" do
       pipe_through :auth
       get "/", DeviceController, :index
+      patch "/:pin/update", DeviceController, :update_state
+      post "/create", DeviceController, :create_state
     end
   end
 

@@ -101,4 +101,20 @@ defmodule Grow.States do
   def change_state(%State{} = state, attrs \\ %{}) do
     State.changeset(state, attrs)
   end
+
+  def get_state_by_pin_id(device_id, pin) do
+    from(s in State, join: d in Grow.Devices.Device, on: d.id == s.device_id, where: d.id == ^device_id and s.pin == ^pin)
+    |> Repo.one()
+  end
+
+  def create_state_child(device_id, attrs \\ %{}) do
+    device = Grow.Devices.get_device!(device_id)
+
+    device
+    |> Ecto.build_assoc(:states)
+    |> State.changeset(attrs)
+    |> Repo.insert()
+
+  end
+
 end
