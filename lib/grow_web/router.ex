@@ -5,8 +5,17 @@ defmodule GrowWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug GrowWeb.PlugMac
+  end
+
   scope "/api", GrowWeb do
     pipe_through :api
+    post "/create-device", DeviceController, :create_device
+    scope "/v1" do
+      pipe_through :auth
+      get "/", DeviceController, :index
+    end
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
